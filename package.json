@@ -1,0 +1,83 @@
+{
+	"name": "@amalgama/entity-store",
+	"version": "1.0.0",
+	"description": "A set of base classes for defining entities, stores for each entity, and relationships between them, facilitating the tasks of creating, fetching, updating and deleting them.",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist/**/*"
+	],
+	"scripts": {
+		"build": "tsc",
+		"lint": "eslint src/",
+		"test": "NODE_ENV=test JEST_JUNIT_OUTPUT_DIR=reports TZ=UTC jest",
+		"release": "release-it"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git@git.amalgama.co:amalgama/packages/npm/entity-store.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"publishConfig": {
+		"@amalgama:registry": " https://git.amalgama.co/api/v4/projects/982/packages/npm/"
+	},
+	"devDependencies": {
+		"@types/jest": "^28.1.6",
+		"@typescript-eslint/eslint-plugin": "^5.30.7",
+		"@typescript-eslint/parser": "^5.30.7",
+		"eslint": "^8.20.0",
+		"eslint-config-airbnb-base": "^15.0.0",
+		"eslint-import-resolver-typescript": "^3.3.0",
+		"eslint-plugin-import": "^2.26.0",
+		"jest": "^28.1.3",
+		"jest-junit": "^14.0.0",
+		"release-it": "^15.1.3",
+		"ts-jest": "^28.0.7",
+		"typescript": "^4.7.4"
+	},
+	"jest": {
+		"collectCoverage": true,
+		"coverageDirectory": "<rootDir>/reports/coverage",
+		"coverageReporters": [
+			"json",
+			"lcov",
+			"text",
+			"html",
+			"text-summary",
+			"cobertura"
+		],
+		"reporters": [
+			"default",
+			"jest-junit"
+		],
+		"testMatch": [
+			"<rootDir>/tests/**/?(*.)(spec|test).ts"
+		],
+		"transform": {
+			"^.+\\.jsx?$": "ts-jest"
+		},
+		"preset": "ts-jest"
+	},
+	"release-it": {
+		"git": {
+			"tagName": "v${version}",
+			"requireCleanWorkingDir": false,
+			"requireUpstream": true,
+			"commitMessage": "Release v${version}",
+			"changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --issue-url https://git.amalgama.co/amalgama/packages/npm/my-awesome-package/-/issues/{id} --merge-url https://git.amalgama.co/amalgama/packages/npm/my-awesome-package/-/merge_requests/{id} --commit-url https://git.amalgama.co/amalgama/packages/npm/my-awesome-package/-/commit/{id}"
+		},
+		"hooks": {
+			"after:bump": "npx auto-changelog -p"
+		},
+		"gitlab": {
+			"release": true,
+			"publish": true,
+			"releaseName": "Release v${version}"
+		},
+		"npm": {
+			"skipChecks": true
+		}
+	}
+}
