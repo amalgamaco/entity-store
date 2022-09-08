@@ -1,11 +1,13 @@
-import { IRelationConstructor, StoreNameType } from './types';
-import { IRootStore } from '../types';
+import type {
+	IRelationConstructor, StoreName, IModel, LookupKeyName
+} from './types';
+import type { IRootStore, ID } from '../types';
 
 export default class BelongsToRelation {
-	model: Record<string, unknown>;
+	model: IModel;
 	rootStore: IRootStore;
-	storeName: StoreNameType;
-	lkName: string;
+	storeName: StoreName;
+	lkName: LookupKeyName;
 
 	constructor( {
 		model, rootStore, storeName, lkName
@@ -17,7 +19,7 @@ export default class BelongsToRelation {
 	}
 
 	get relatedId() {
-		return this.model[ this.lkName ] as number;
+		return this.model[ this.lkName ] as ID;
 	}
 
 	get store() {

@@ -1,29 +1,29 @@
+export type ID = number | string;
+
 export interface IStore {
-	get: ( id: number ) => unknown,
-	has: ( id: number ) => boolean
+	get: ( id: ID ) => unknown,
+	has: ( id: ID ) => boolean
 }
 
 export interface IRootStore {
 	[ key: string ]: IStore
 }
 
-export type ID = number | string;
-
 export type JSONValue =
-| string
-| number
-| boolean
-| { [x: string]: JSONValue }
-| Array<JSONValue>;
+	| string
+	| number
+	| boolean
+	| null
+	| { [x: string]: JSONValue }
+	| Array<JSONValue>;
 
 export interface IEntitySerialization {
-	id: ID,
 	[x: string]: JSONValue
 }
 
 export interface IEntity {
 	id: ID,
-	updateWith: ( anotherEntity: this ) => this,
+	updateWith( anotherEntity: IEntity ): IEntity,
 	toJSON(): IEntitySerialization,
 	rootStore?: IRootStore
 }

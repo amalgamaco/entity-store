@@ -1,8 +1,8 @@
 import { makeObservable, observable, action } from 'mobx';
-import { IRootStore } from '../../src/types';
+import { IEntity, IEntitySerialization, IRootStore } from '../../src/types';
 import StoreEntity from '../../src/StoreEntity';
 
-export default class Item extends StoreEntity {
+export default class Item extends StoreEntity implements IEntity {
 	id: number;
 	name: string;
 
@@ -15,12 +15,14 @@ export default class Item extends StoreEntity {
 		makeObservable( this, {
 			id: observable,
 			name: observable,
-			update: action,
+			updateWith: action
 		} );
 	}
 
-	static fromJSON( json : {id? : number, name? : string}, rootStore? : IRootStore ) {
-		const { id, name } = json;
+	static fromJSON( attributes: IEntitySerialization, rootStore? : IRootStore ) {
+		const id = attributes.id as number;
+		const name = attributes.name as string;
+
 		if ( !( id && name ) ) throw new Error( 'Invalid json' );
 
 		return new Item( { id, name }, rootStore );
@@ -29,12 +31,14 @@ export default class Item extends StoreEntity {
 	toJSON() {
 		return {
 			id: this.id,
-			name: this.name,
+			name: this.name
 		};
 	}
 
-	update( { id, name } : Record<string, unknown> ) {
-		this.id = id as number;
-		this.name = name as string;
+	updateWith( { id, name }: Item ): Item {
+		this.id = id;
+		this.name = name;
+
+		return this;
 	}
 }

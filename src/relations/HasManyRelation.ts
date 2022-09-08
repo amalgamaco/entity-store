@@ -1,23 +1,25 @@
-import { IRelationConstructor, StoreNameType } from './types';
-import { IRootStore } from '../types';
+import type {
+	IRelationConstructor, StoreName, IModel, LookupKeyName
+} from './types';
+import type { IRootStore, ID } from '../types';
 
 export default class HasManyRelation {
-	model: Record<string, unknown[]>;
+	model: IModel;
 	rootStore: IRootStore;
-	storeName: StoreNameType;
-	lkName: string;
+	storeName: StoreName;
+	lkName: LookupKeyName;
 
 	constructor( {
 		model, rootStore, storeName, lkName
 	} : IRelationConstructor ) {
-		this.model = model as Record<string, unknown[]>;
+		this.model = model;
 		this.rootStore = rootStore;
 		this.storeName = storeName;
 		this.lkName = lkName;
 	}
 
 	get relatedIds() {
-		return this.model[ this.lkName ];
+		return this.model[ this.lkName ] as ID[];
 	}
 
 	get store() {
@@ -30,7 +32,7 @@ export default class HasManyRelation {
 		return this
 			.relatedIds
 			.map(
-				relatedId => this.store?.get( relatedId as number ) || null
+				relatedId => this.store?.get( relatedId ) || null
 			)
 			.filter( related => !!related );
 	}

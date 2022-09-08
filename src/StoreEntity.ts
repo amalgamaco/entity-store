@@ -8,7 +8,7 @@ export default abstract class StoreEntity {
 	private __relationships : IRelationConstructor[] | undefined;
 
 	static relationships() : IRelationshipConfig[] { return []; }
-	abstract updateWith( other: this ): this;
+	abstract updateWith( other: StoreEntity ): StoreEntity;
 
 	constructor( rootStore? : IRootStore ) {
 		this.createNonEnumerableProperty( '__rootStore', rootStore );

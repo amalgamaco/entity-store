@@ -9,7 +9,7 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"lint": "eslint src/",
+		"lint": "eslint src/ tests/",
 		"test": "NODE_ENV=test JEST_JUNIT_OUTPUT_DIR=reports TZ=UTC jest",
 		"release": "release-it"
 	},

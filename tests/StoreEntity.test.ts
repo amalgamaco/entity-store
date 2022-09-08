@@ -2,7 +2,7 @@
 import StoreEntity from '../src/StoreEntity';
 import { IRootStore } from '../src/types';
 import { IRelationshipConfig } from '../src/relations/EntityRelationsFactory';
-import { StoreNameType } from '../src/relations/types';
+import { StoreName } from '../src/relations/types';
 import EntityStore from '../src/EntityStore';
 import Item from './support/Item';
 
@@ -14,8 +14,10 @@ class Concrete extends StoreEntity {
 		this.name = name;
 	}
 
-	update( other: {name: string} ) {
-		this.name = other.name;
+	updateWith( { name }: Concrete ) {
+		this.name = name;
+
+		return this;
 	}
 }
 
@@ -29,13 +31,13 @@ class ConcreteWithRelationships extends StoreEntity {
 			{
 				name: 'item',
 				lookupKey: 'itemId',
-				store: 'itemStore' as StoreNameType,
+				store: 'itemStore' as StoreName,
 				type: 'BELONGS_TO'
 			},
 			{
 				name: 'items',
 				lookupKey: 'itemIds',
-				store: 'itemStore' as StoreNameType,
+				store: 'itemStore' as StoreName,
 				type: 'HAS_MANY'
 			}
 		];
@@ -48,8 +50,10 @@ class ConcreteWithRelationships extends StoreEntity {
 		this.itemIds = [ 1, 2 ];
 	}
 
-	update( other: {name: string} ) {
-		this.name = other.name;
+	updateWith( { name }: ConcreteWithRelationships ) {
+		this.name = name;
+
+		return this;
 	}
 }
 

@@ -70,7 +70,7 @@ export default class EntityStore<T extends IEntity> {
 	}
 
 	clear() {
-		this.replace( [] );
+		this.entityMap.clear();
 	}
 
 	toJSON(): IStoreSerialization {
@@ -90,7 +90,7 @@ export default class EntityStore<T extends IEntity> {
 	}
 
 	private updateExistentWith( entity: T ): T | undefined {
-		return this.get( entity.id )?.updateWith( entity );
+		return this.get( entity.id )?.updateWith( entity ) as T | undefined;
 	}
 
 	private setEntityRootStore( entity : T ) {

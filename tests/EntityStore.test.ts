@@ -32,7 +32,7 @@ describe( 'EntityStore', () => {
 
 			store.add( item );
 
-			expect( store.get( item.id ).rootStore ).toEqual( rootStore );
+			expect( store.get( item.id )?.rootStore ).toEqual( rootStore );
 		} );
 
 		describe( 'with a previous existing item with the same id', () => {
@@ -44,7 +44,7 @@ describe( 'EntityStore', () => {
 				store.add( otherItem );
 
 				expect( store.get( item.id ) ).toBe( item );
-				expect( store.get( item.id ).name ).toBe( otherItem.name );
+				expect( store.get( item.id )?.name ).toBe( otherItem.name );
 			} );
 		} );
 	} );
@@ -67,7 +67,7 @@ describe( 'EntityStore', () => {
 				store.create( { id: item.id, name: 'Replacement' } );
 
 				expect( store.get( item.id ) ).toBe( item );
-				expect( store.get( item.id ).name ).toBe( 'Replacement' );
+				expect( store.get( item.id )?.name ).toBe( 'Replacement' );
 			} );
 		} );
 	} );

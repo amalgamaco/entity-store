@@ -1,7 +1,8 @@
 import BelongsToRelation from './BelongsToRelation';
 import HasManyRelation from './HasManyRelation';
-import { IRootStore } from '../types';
-import { StoreNameType } from './types';
+
+import type { IRootStore } from '../types';
+import type { IModel, StoreName } from './types';
 
 const RELATION_CLASS_BY_TYPE = Object.freeze( {
 	BELONGS_TO: BelongsToRelation,
@@ -11,12 +12,12 @@ const RELATION_CLASS_BY_TYPE = Object.freeze( {
 export interface IRelationshipConfig {
 	name: string,
 	type: keyof typeof RELATION_CLASS_BY_TYPE,
-	store: StoreNameType,
+	store: StoreName,
 	lookupKey: string,
 }
 
 interface Constructor {
-	model: Record<string, unknown | unknown[]>
+	model: IModel,
 	rootStore: IRootStore,
 	config: IRelationshipConfig
 }
@@ -31,7 +32,9 @@ export default class EntityRelationsFactory {
 			lookupKey: lkName
 		}
 	} : Constructor ) {
-		const RelationClass = EntityRelationsFactory.relationClassForType( type );
+		const RelationClass = EntityRelationsFactory
+			.relationClassForType( type );
+
 		return new RelationClass( {
 			model, rootStore, storeName, lkName
 		} );
