@@ -26,10 +26,6 @@ export default class BelongsToRelation {
 		return this.rootStore ? this.rootStore[ this.storeName ] : null;
 	}
 
-	get exists() {
-		return this.store?.has( this.relatedId );
-	}
-
 	get value() {
 		return this.store?.get( this.relatedId ) || null;
 	}

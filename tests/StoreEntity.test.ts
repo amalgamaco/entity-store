@@ -1,70 +1,22 @@
 /* eslint-disable max-classes-per-file */
-import StoreEntity from '../src/StoreEntity';
 import { IRootStore } from '../src/types';
-import { IRelationshipConfig } from '../src/relations/EntityRelationsFactory';
-import { StoreName } from '../src/relations/types';
 import EntityStore from '../src/EntityStore';
 import Item from './support/Item';
+import Concrete from './support/storeEnties/Concrete';
+import ConcreteWithRelationships from './support/storeEnties/ConcreteWithRelationships';
+import ConcreateWithLegacyRelationships from './support/storeEnties/ConcreteWithLegacyRelationships';
 
-class Concrete extends StoreEntity {
-	name: string;
-
-	constructor( name: string, rootStore : IRootStore ) {
-		super( rootStore );
-		this.name = name;
-	}
-
-	updateWith( { name }: Concrete ) {
-		this.name = name;
-
-		return this;
-	}
-}
-
-class ConcreteWithRelationships extends StoreEntity {
-	name: string;
-	itemId: number;
-	itemIds: number[];
-
-	static relationships() : IRelationshipConfig[] {
-		return [
-			{
-				name: 'item',
-				lookupKey: 'itemId',
-				store: 'itemStore' as StoreName,
-				type: 'BELONGS_TO'
-			},
-			{
-				name: 'items',
-				lookupKey: 'itemIds',
-				store: 'itemStore' as StoreName,
-				type: 'HAS_MANY'
-			}
-		];
-	}
-
-	constructor( name: string, rootStore : IRootStore ) {
-		super( rootStore );
-		this.name = name;
-		this.itemId = 1;
-		this.itemIds = [ 1, 2 ];
-	}
-
-	updateWith( { name }: ConcreteWithRelationships ) {
-		this.name = name;
-
-		return this;
-	}
-}
+type ConcreteWithRelationshipsClass = typeof ConcreteWithRelationships
+	| typeof ConcreateWithLegacyRelationships;
 
 describe( 'StoreEntity', () => {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const itemStore = new EntityStore<Item>( Item, this );
+	const rootStore: IRootStore = {};
+	const itemsStore = new EntityStore<Item>( Item, rootStore );
+	rootStore.itemsStore = itemsStore;
 
-	const rootStore = {
-		itemStore
-	} as unknown as IRootStore;
+	beforeEach( () => {
+		itemsStore.clear();
+	} );
 
 	describe( 'when the class does not have relationships', () => {
 		it( 'creates the instance normally', () => {
@@ -73,18 +25,87 @@ describe( 'StoreEntity', () => {
 		} );
 	} );
 
-	describe( 'when the class has relationships', () => {
-		it( 'creates the instance with the corresponding getters', () => {
-			const item = itemStore.create( { id: 1, name: 'Item 1' } );
+	const testsEntityWithRelationships = ( InstanceKlass: ConcreteWithRelationshipsClass ) => {
+		describe( 'for a has many relationship', () => {
+			it( 'returns the related items', () => {
+				const item1 = itemsStore.create( { id: 1, name: 'Item 1' } );
+				const item2 = itemsStore.create( { id: 2, name: 'Item 2' } );
+				const instance = new InstanceKlass( 'concrete instance', rootStore );
 
-			const instance = new ConcreteWithRelationships( 'concrete instance', rootStore );
-			expect( instance ).toEqual( {
-				name: 'concrete instance',
-				itemId: 1,
-				item,
-				itemIds: [ 1, 2 ],
-				items: [ item ]
+				expect( instance.items ).toEqual( [ item1, item2 ] );
+			} );
+
+			it( 'returns the related items filtering the non-existent ones', () => {
+				const item1 = itemsStore.create( { id: 1, name: 'Item 1' } );
+				const instance = new InstanceKlass( 'concrete instance', rootStore );
+
+				expect( instance.items ).toEqual( [ item1 ] );
+			} );
+
+			it( 'returns an empty list if the related store doesn\'t exists', () => {
+				const instance = new InstanceKlass( 'concrete instance', {} );
+
+				expect( instance.items ).toEqual( [] );
+			} );
+
+			it( 'returns the related items from the new store when the root store changes', () => {
+				itemsStore.create( { id: 1, name: 'Item 1' } );
+				itemsStore.create( { id: 2, name: 'Item 2' } );
+				const instance = new InstanceKlass( 'concrete instance', rootStore );
+
+				const otherRootStore: IRootStore = {};
+				const otherItemsStore = new EntityStore<Item>( Item, rootStore );
+				otherRootStore.itemsStore = otherItemsStore;
+
+				const item1 = otherItemsStore.create( { id: 1, name: 'Item 1 - Bis' } );
+				const item2 = otherItemsStore.create( { id: 2, name: 'Item 2 - Bis' } );
+				instance.rootStore = otherRootStore;
+
+				expect( instance.items ).toEqual( [ item1, item2 ] );
 			} );
 		} );
+
+		describe( 'for a belongs to relationship', () => {
+			it( 'returns the related item', () => {
+				const item1 = itemsStore.create( { id: 1, name: 'Item 1' } );
+				const instance = new InstanceKlass( 'concrete instance', rootStore );
+
+				expect( instance.item ).toEqual( item1 );
+			} );
+
+			it( 'returns null if the related item doesn\'t exists in the related store', () => {
+				const instance = new InstanceKlass( 'concrete instance', rootStore );
+
+				expect( instance.item ).toEqual( null );
+			} );
+
+			it( 'returns null if the related store doesn\'t exists', () => {
+				const instance = new InstanceKlass( 'concrete instance', {} );
+
+				expect( instance.item ).toEqual( null );
+			} );
+
+			it( 'returns the item from the new store when the root store changes', () => {
+				itemsStore.create( { id: 1, name: 'Item 1' } );
+				const instance = new InstanceKlass( 'concrete instance', rootStore );
+
+				const otherRootStore: IRootStore = {};
+				const otherItemsStore = new EntityStore<Item>( Item, rootStore );
+				otherRootStore.itemsStore = otherItemsStore;
+
+				const item1 = otherItemsStore.create( { id: 1, name: 'Item 1 - Other' } );
+				instance.rootStore = otherRootStore;
+
+				expect( instance.item ).toEqual( item1 );
+			} );
+		} );
+	};
+
+	describe( 'when the class has decorator defined relationships', () => {
+		testsEntityWithRelationships( ConcreteWithRelationships );
+	} );
+
+	describe( 'when the class has legacy defined relationships', () => {
+		testsEntityWithRelationships( ConcreateWithLegacyRelationships );
 	} );
 } );

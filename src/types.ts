@@ -18,6 +18,7 @@ export type JSONValue =
 	| Array<JSONValue>;
 
 export interface IEntitySerialization {
+	id: ID,
 	[x: string]: JSONValue
 }
 

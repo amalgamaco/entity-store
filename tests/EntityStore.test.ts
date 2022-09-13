@@ -1,4 +1,4 @@
-import EntityStore from '../src/EntityStore';
+import { EntityStore } from '../src';
 import Item from './support/Item';
 import ItemFactory from './support/factories/ItemFactory';
 import { IRootStore } from '../src/types';
@@ -13,7 +13,7 @@ describe( 'EntityStore', () => {
 	} );
 
 	describe( 'constructor', () => {
-		it( 'initializes with an empty list', () => {
+		it( 'initializes the store with an empty collection', () => {
 			expect( store.all() ).toEqual( [] );
 		} );
 	} );
@@ -57,6 +57,24 @@ describe( 'EntityStore', () => {
 			store.create( { id, name } );
 
 			expect( store.get( id ) ).toEqual( new Item( { id, name }, rootStore ) );
+		} );
+
+		it( 'returns the created entity', () => {
+			const id = 3;
+			const name = 'Item 3';
+
+			const item = store.create( { id, name } );
+
+			expect( item ).toEqual( new Item( { id, name }, rootStore ) );
+		} );
+
+		it( 'sets the store\'s root store as the item\'s root store', () => {
+			const id = 3;
+			const name = 'Item 3';
+
+			const item = store.create( { id, name } );
+
+			expect( item?.rootStore ).toEqual( rootStore );
 		} );
 
 		describe( 'with a previous existing item with the same id', () => {

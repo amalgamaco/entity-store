@@ -23,7 +23,7 @@ export default class Item extends StoreEntity implements IEntity {
 		const id = attributes.id as number;
 		const name = attributes.name as string;
 
-		if ( !( id && name ) ) throw new Error( 'Invalid json' );
+		if ( !( name ) ) throw new Error( 'Invalid json' );
 
 		return new Item( { id, name }, rootStore );
 	}

@@ -1,42 +1,33 @@
 import EntityRelationsFactory, { IRelationshipConfig } from './relations/EntityRelationsFactory';
 import type { IRootStore } from './types';
-import { IRelationConstructor } from './relations/types';
+import BelongsToRelation from './relations/BelongsToRelation';
+import HasManyRelation from './relations/HasManyRelation';
+import enumerable from './decorators/enumerable';
 
 export default abstract class StoreEntity {
-	rootStore: IRootStore | undefined;
-	private __rootStore : IRootStore | undefined;
-	private __relationships : IRelationConstructor[] | undefined;
+	@enumerable( false )
+	private __rootStore: IRootStore | undefined;
+
+	@enumerable( false )
+	private __relationships: ( BelongsToRelation | HasManyRelation )[];
 
 	static relationships() : IRelationshipConfig[] { return []; }
 	abstract updateWith( other: StoreEntity ): StoreEntity;
 
 	constructor( rootStore? : IRootStore ) {
-		this.createNonEnumerableProperty( '__rootStore', rootStore );
-		this.createNonEnumerableProperty( '__relationships', [] );
+		this.__rootStore = rootStore;
+		this.__relationships = [];
 
-		this.createRootStoreAttribute();
 		this.createRelationshipsComputedAttributes();
 	}
 
-	private createNonEnumerableProperty( propertyName : string, value : unknown ) {
-		Object.defineProperty( this, propertyName, {
-			enumerable: false,
-			writable: true,
-			value
-		} );
+	get rootStore(): IRootStore | undefined { return this.__rootStore; }
+	set rootStore( newRootStore: IRootStore | undefined ) {
+		this.__rootStore = newRootStore;
+		this.updateRelationshipsRootStore();
 	}
 
-	private createRootStoreAttribute() {
-		Object.defineProperty( this, 'rootStore', {
-			enumerable: false,
-			get: () => this.__rootStore,
-			set: ( rootStore: IRootStore ) => {
-				this.__rootStore = rootStore;
-				this.updateRelationshipsRootStore();
-			}
-		} );
-	}
-
+	// Private
 	private createRelationshipsComputedAttributes() {
 		( this.constructor as typeof StoreEntity )
 			.relationships()
@@ -52,7 +43,7 @@ export default abstract class StoreEntity {
 			config: relationship
 		} );
 
-		this.__relationships?.push( relation );
+		this.__relationships.push( relation );
 
 		Object.defineProperty( this, relationship.name, {
 			enumerable: true,
@@ -62,7 +53,7 @@ export default abstract class StoreEntity {
 	}
 
 	private updateRelationshipsRootStore() {
-		this.__relationships?.forEach(
+		this.__relationships.forEach(
 			( relationship ) => { relationship.rootStore = this.__rootStore as IRootStore; }
 		);
 	}
