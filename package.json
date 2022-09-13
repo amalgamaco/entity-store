@@ -9,7 +9,7 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"lint": "eslint src/",
+		"lint": "eslint src/ tests/",
 		"test": "NODE_ENV=test JEST_JUNIT_OUTPUT_DIR=reports TZ=UTC jest",
 		"release": "release-it"
 	},
@@ -31,8 +31,10 @@
 		"eslint-config-airbnb-base": "^15.0.0",
 		"eslint-import-resolver-typescript": "^3.3.0",
 		"eslint-plugin-import": "^2.26.0",
+		"fishery": "^2.2.2",
 		"jest": "^28.1.3",
 		"jest-junit": "^14.0.0",
+		"mobx": "^6.6.1",
 		"release-it": "^15.1.3",
 		"ts-jest": "^28.0.7",
 		"typescript": "^4.7.4"
@@ -40,6 +42,9 @@
 	"jest": {
 		"collectCoverage": true,
 		"coverageDirectory": "<rootDir>/reports/coverage",
+		"collectCoverageFrom": [
+			"src/**/*.ts"
+		],
 		"coverageReporters": [
 			"json",
 			"lcov",
@@ -56,7 +61,12 @@
 			"<rootDir>/tests/**/?(*.)(spec|test).ts"
 		],
 		"transform": {
-			"^.+\\.jsx?$": "ts-jest"
+			"^.+\\.jsx?$": [
+				"ts-jest",
+				{
+					"experimentalDecorators": true
+				}
+			]
 		},
 		"preset": "ts-jest"
 	},
@@ -79,5 +89,8 @@
 		"npm": {
 			"skipChecks": true
 		}
+	},
+	"peerDependencies": {
+		"mobx": "^6.6.1"
 	}
 }
