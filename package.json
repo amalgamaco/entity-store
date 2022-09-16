@@ -76,7 +76,7 @@
 			"requireCleanWorkingDir": false,
 			"requireUpstream": true,
 			"commitMessage": "Release v${version}",
-			"changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --issue-url https://git.amalgama.co/amalgama/packages/npm/my-awesome-package/-/issues/{id} --merge-url https://git.amalgama.co/amalgama/packages/npm/my-awesome-package/-/merge_requests/{id} --commit-url https://git.amalgama.co/amalgama/packages/npm/my-awesome-package/-/commit/{id}"
+			"changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --issue-url https://git.amalgama.co/amalgama/packages/npm/entity-store/-/issues/{id} --merge-url https://git.amalgama.co/amalgama/packages/npm/entity-store/-/merge_requests/{id} --commit-url https://git.amalgama.co/amalgama/packages/npm/entity-store/-/commit/{id}"
 		},
 		"hooks": {
 			"after:bump": "npx auto-changelog -p"
