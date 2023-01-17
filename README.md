@@ -7,106 +7,193 @@ A set of base classes for defining entities, stores for each entity, and relatio
 A store for entities of a given type.
 
 ```ts
+import { EntityStore, AttrsType } from '@amalgama/entity-store';
 import Item from '../entities/Item';
 import { rootStore } from './shared';
 
-const itemsStore = new EntityStore( Item, rootStore );
+const itemsStore = new EntityStore<Item, AttrsType<typeof Item>>( Item, rootStore );
 rootStore.itemsStore = itemsStore;
 
 const item = itemsStore.create( { id: 1, ... } );
 ```
 
-## Methods
+### Methods
 
-### constructor( EntityClass, rootStore ): EntityStore< EntityClass >
-Creates a new store for the given `EntityClass`.
-
-__Parameters__
-|  Name       | Description   |
-| ---         |  ---          |
-| __EntityClass__ | The class of the entities that will be stored in this store. |
-| __rootStore__   | The root store that saves a reference to the stores that contain the relations for the entities stored in this store. When creating a new entity using the method `create`, this root store will be automatically set to the created store entity. |
-
-### create( attributes : IEntitySerialization )
-Creates a new entity with the given attributes using the entity's `fromJSON` method. Sets the store's root store as the entity root store.
+#### constructor( EntityClass, rootStore ): EntityStore<Entity, EntityAttrs>
+Creates a new store for the given `EntityClass` and `rootStore`.
 
 __Parameters__
-|  Name       | Description   |
-| ---         |  ---          |
-| __attributes__| The attributes to create the entity with. |
+|  Name       |  Type  | Description   |
+| ---         |  ---   |  ---          |
+| __EntityClass__ | [`IEntityClass<Entity, EntityAttrs>`](#ientityclass) | The class of the entities that will be stored in this store. |
+| __rootStore__   | [`IRootStore`](#irootstore) | The root store that saves a reference to the stores that contain the relations for the entities stored in this store. When creating a new entity using the method `create`, this root store will be automatically set to the created store entity. |
 
-### add( entity : T )
+#### create( attributes: EntityAttrs )
+Creates a new entity with the given attributes using the entity's `constructor` method. Sets the store's root store as the entity root store.
+
+__Parameters__
+|  Name       |  Type  | Description   |
+| ---         |  ---   |  ---          |
+| __attributes__| `EntityAttrs` which should extend [`IEntityRequiredAttributes`](#ientityrequiredattributes) | The attributes to create the entity with. |
+
+#### add( entity: Entity )
 Adds a new entity to the store. If an entity with the same `id` already exists, it's updated with the passed entity by calling `updateWith` on the existing entity.
 
 __Parameters__
-|  Name       | Description   |
-| ---         |  ---          |
-| __entity__ | The entity to add to the store. |
+|  Name       |  Type  | Description   |
+| ---         |  ---   |  ---          |
+| __entity__ | `Entity` which should extend [`IEntity`](#ientity) | The entity to add to the store. |
 
-### has( id : ID ): boolean
+#### has( id: ID ): boolean
 Returns `true` if there is an entity with the passed `id` stored in the store. Returns `false` otherwise.
 
 __Parameters__
-|  Name       | Description   |
-| ---         |  ---          |
-| __id__ | The `id` to check. |
+|  Name       |  Type  | Description   |
+| ---         |  ---   |  ---          |
+| __id__ | [`ID`](#id) | The `id` to check. |
 
-### get( id : ID ): T | null
+#### get( id: ID ): Entity | null
 Returns the entity with the passed `id` or `null` if there is no entity for that `id`.
 
 __Parameters__
-|  Name       | Description   |
-| ---         |  ---          |
-| __id__ | The `id` of the entity to retrieve from the store. |
+|  Name       |  Type  | Description   |
+| ---         |  ---   |  ---          |
+| __id__ | [`ID`](#id) | The `id` of the entity to retrieve from the store. |
 
-### all(): T[]
+#### all(): Entity[]
 Returns a list with all the entities stored in the store.
 
-### where( condition: ( entity: T ) => boolean ): T[]
+#### where( condition: ( entity: Entity ) => boolean ): Entity[]
 Returns a list of all the entities stored in the store that meet the passed condition.
 
 __Parameters__
-|  Name       | Description   |
-| ---         |  ---          |
-| __condition__ | The condition to check against the entities in the store. This callback receives an entity and must return a boolean indicating if the given entity meets the condition or not. |
+|  Name       | Type | Description   |
+| ---         | --- |  ---          |
+| __condition__ | `( entity: Entity ) => boolean` | The condition to check against the entities in the store. This callback receives an entity and must return a boolean indicating if the given entity meets the condition or not. |
 
-### delete( id : ID )
+#### delete( id: ID )
 Deletes the entity with the passed `id` from the store.
 
 __Parameters__
-|  Name       | Description   |
-| ---         |  ---          |
-| __id__ | The `id` of the entity to delete. |
+|  Name       |  Type  | Description   |
+| ---         |  ---   |  ---          |
+| __id__ | [`ID`](#id) | The `id` of the entity to delete. |
 
-### deleteAll( ids : ID[] )
+#### deleteAll( ids: ID[] )
 Deletes all the entities identified by the passed `ids` list.
 
 __Parameters__
-|  Name       | Description   |
-| ---         |  ---          |
-| __ids__ | A list of `id`s of the entities to delete. |
+|  Name       |  Type  | Description   |
+| ---         |  ---   |  ---          |
+| __ids__ | [`ID[]`](#id) | A list of `id`s of the entities to delete. |
 
-### replace( entities : T[] )
+#### replace( entities: Entity[] )
 Replaces the stored entities with the ones passed.
 
 __Parameters__
-|  Name       | Description   |
-| ---         |  ---          |
-| __entities__ | The entities to replace the store content with. |
+|  Name       |  Type  | Description   |
+| ---         |  ---   |  ---          |
+| __entities__ | `Entity[]` which should extend [`IEntity`](#ientity) | The entities to replace the store content with. |
 
-### clear()
+#### clear()
 Empties the store.
 
-### toJSON(): IStoreSerialization
-Serializes the store to a JSON compatible object.
+#### serialize(): IStoreSerialization
+Serializes the store. It rerurns a list of the serializations for all the entities in the store.
 
-### hydrate( serialization : IStoreSerialization )
+#### hydrate( serialization : IStoreSerialization )
 Fills the store with the entities created from the serialization passed.
 
 __Parameters__
-|  Name       | Description   |
-| ---         |  ---          |
-| __serialization__ | The serialization that will be used to fill the store. |
+|  Name       |  Type  | Description   |
+| ---         |  ---   |  ---          |
+| __serialization__ | [`IStoreSerialization`](#istoreserialization) | The serialization that will be used to fill the store. |
+
+### Types
+
+#### ID
+The type of the `id` attribute of an entity.
+
+```ts
+type ID = number | string;
+```
+
+#### IRootStore
+Represents the type of a `EntityStore`'s root store.
+
+```ts
+interface IRootStore {
+	[ key: string ]: IStore
+}
+```
+
+#### IEntity
+Represents the type of a entity that will be stored in a `EntityStore`.
+
+```ts
+interface IEntity {
+	id: ID,
+	rootStore?: IRootStore
+
+	updateWith( anotherEntity: IEntity ): IEntity,
+	toJSON(): IEntitySerialization,
+}
+```
+
+#### IEntityClass
+Represents the type of the class that contructs the entities that will be stored in a `EntityStore`.
+
+```ts
+interface IEntityClass<T extends IEntity, Attrs extends IEntityRequiredAttributes> {
+	new( attributes: Attrs, rootStore?: IRootStore ): T
+	fromJSON( attributes: IEntitySerialization, rootStore?: IRootStore ): T
+}
+```
+
+#### IEntityRequiredAttributes
+Represents the required atttributes for all entities.
+
+```ts
+interface IEntityRequiredAttributes {
+	id: ID
+}
+```
+
+#### AttrsType
+Represents the attributes of an Entity. This attributes are calculated as the first parameter of the entity's constructor.
+
+```ts
+type AttrsType<T extends new ( ...args: any ) => any> = First<ConstructorParameters<T>>;
+```
+
+#### IEntitySerialization
+Represents the serialization of an entity.
+
+```ts
+interface IEntitySerialization {
+	id: ID
+}
+```
+
+#### IStoreSerialization
+Represents the serialization of a store.
+
+```ts
+type IStoreSerialization = IEntitySerialization[];
+```
+
+#### JSONValue
+Represents any possible JSON value.
+
+```ts
+type JSONValue =
+	| string
+	| number
+	| boolean
+	| null
+	| { [x: string]: JSONValue }
+	| Array<JSONValue>;
+```
 
 ## StoreEntity
 
@@ -224,7 +311,7 @@ class Post extends StoreEntiy {
 	comments!: Comment[];
 
 
-	static relationships() : IRelationshipConfig[] {
+	static relationships(): IRelationshipConfig[] {
 		return [
 			{
 				name: 'author',

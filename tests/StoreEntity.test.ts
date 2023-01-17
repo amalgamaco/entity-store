@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { IRootStore } from '../src/types';
+import { AttrsType, IRootStore } from '../src/types';
 import EntityStore from '../src/EntityStore';
 import Item from './support/Item';
 import Concrete from './support/storeEnties/Concrete';
@@ -11,7 +11,7 @@ type ConcreteWithRelationshipsClass = typeof ConcreteWithRelationships
 
 describe( 'StoreEntity', () => {
 	const rootStore: IRootStore = {};
-	const itemsStore = new EntityStore<Item>( Item, rootStore );
+	const itemsStore = new EntityStore<Item, AttrsType<typeof Item>>( Item, rootStore );
 	rootStore.itemsStore = itemsStore;
 
 	beforeEach( () => {
@@ -54,7 +54,7 @@ describe( 'StoreEntity', () => {
 				const instance = new InstanceKlass( 'concrete instance', rootStore );
 
 				const otherRootStore: IRootStore = {};
-				const otherItemsStore = new EntityStore<Item>( Item, rootStore );
+				const otherItemsStore = new EntityStore<Item, AttrsType<typeof Item>>( Item, rootStore );
 				otherRootStore.itemsStore = otherItemsStore;
 
 				const item1 = otherItemsStore.create( { id: 1, name: 'Item 1 - Bis' } );
@@ -90,7 +90,7 @@ describe( 'StoreEntity', () => {
 				const instance = new InstanceKlass( 'concrete instance', rootStore );
 
 				const otherRootStore: IRootStore = {};
-				const otherItemsStore = new EntityStore<Item>( Item, rootStore );
+				const otherItemsStore = new EntityStore<Item, AttrsType<typeof Item>>( Item, rootStore );
 				otherRootStore.itemsStore = otherItemsStore;
 
 				const item1 = otherItemsStore.create( { id: 1, name: 'Item 1 - Other' } );

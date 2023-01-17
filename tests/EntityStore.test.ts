@@ -1,12 +1,12 @@
 import { EntityStore } from '../src';
 import Item from './support/Item';
 import ItemFactory from './support/factories/ItemFactory';
-import { IRootStore } from '../src/types';
+import { AttrsType, IRootStore } from '../src/types';
 
 const rootStore = 'rootStore' as unknown as IRootStore;
 
 describe( 'EntityStore', () => {
-	let store : EntityStore<Item>;
+	let store : EntityStore<Item, AttrsType<typeof Item>>;
 
 	beforeEach( () => {
 		store = new EntityStore( Item, rootStore );
@@ -198,19 +198,19 @@ describe( 'EntityStore', () => {
 		} );
 	} );
 
-	describe( 'toJSON', () => {
+	describe( 'serialize', () => {
 		it( 'returns the serialized entities', () => {
 			const items = ItemFactory.buildList( 2 );
 			store.replace( items );
 
-			const result = store.toJSON();
+			const result = store.serialize();
 
 			expect( result ).toEqual( items.map( item => item.toJSON() ) );
 		} );
 	} );
 
 	describe( 'hydrate', () => {
-		it( 'instantiates entities from the provided serialization', () => {
+		it( 'hydrates the store with the entities from the provided serialization', () => {
 			const items = ItemFactory.buildList( 2 );
 			const serialization = items.map( item => item.toJSON() );
 
