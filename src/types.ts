@@ -18,19 +18,34 @@ export type JSONValue =
 	| Array<JSONValue>;
 
 export interface IEntitySerialization {
-	id: ID,
-	[x: string]: JSONValue
+	id: ID
 }
 
 export interface IEntity {
 	id: ID,
+	rootStore?: IRootStore
+
 	updateWith( anotherEntity: IEntity ): IEntity,
 	toJSON(): IEntitySerialization,
-	rootStore?: IRootStore
 }
 
-export interface IEntityClass<T extends IEntity> {
-	fromJSON: ( attributes: IEntitySerialization, rootStore?: IRootStore ) => T
+export interface IEntityRequiredAttributes {
+	id: ID
+}
+
+type First<T extends any[]> = T extends [infer U, ...any[]]
+	? U extends IEntityRequiredAttributes
+		? U
+		: never
+	: never;
+
+export type AttrsType<
+	T extends new ( ...args: any ) => any
+> = First<ConstructorParameters<T>>;
+
+export interface IEntityClass<T extends IEntity, Attrs extends IEntityRequiredAttributes> {
+	new( attributes: Attrs, rootStore?: IRootStore ): T
+	fromJSON( attributes: IEntitySerialization, rootStore?: IRootStore ): T
 }
 
 export type IStoreSerialization = IEntitySerialization[];
