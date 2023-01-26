@@ -2,6 +2,132 @@
 
 A set of base classes for defining entities, stores for each entity, and relationships between them, facilitating the tasks of creating, fetching, updating and deleting them.
 
+[[_TOC_]]
+
+## Complete example
+
+```ts
+// entities/User.types.ts
+export interface UserAttributes{
+	id: number
+	email: string
+	fullName: string,
+	avatarUrl: string,
+}
+
+export interface UserSerialization {
+	id: number
+	email: string
+	full_name: string,
+	avatar_url: string,
+}
+
+// entities/User.ts
+import { StoreEntity, IRootStore } from '@amalgama/entity-store';
+import { makeObservable, observable } from 'mobx';
+import { UserAttributes, UserSerialization } from './User.types';
+
+export default class User extends StoreEntity {
+	id: number;
+	email: string;
+	fullName: string;
+	avatarUrl: string;
+
+	constructor( attributes: UserAttributes, rootStore?: IRootStore ) {
+		super( rootStore );
+
+		this.id = attributes.id;
+		this.email = attributes.email;
+		this.fullName = attributes.fullName;
+		this.avatarUrl = attributes.avatarUrl;
+
+		makeObservable( this, {
+			id: observable,
+			email: observable,
+			fullName: observable,
+			avatarUrl: observable
+		} );
+	}
+
+	updateWith( other: User ): User {
+		this.fullName = other.fullName;
+		this.email = other.email;
+		this.avatarUrl = other.avatarUrl;
+
+		return this;
+	}
+
+	toJSON() {
+		return {
+			id: this.id,
+			email: this.email,
+			full_name: this.fullName,
+			avatar_url: this.avatarUrl
+		};
+	}
+
+	static fromJSON( attributes: UserSerialization, rootStore?: IRootStore ) {
+		return new User( {
+			id: attributes.id,
+			email: attributes.email,
+			fullName: attributes.full_name,
+			avatarUrl: attributes.avatar_url
+		}, rootStore );
+	}
+}
+
+// stores/RootStore.types.ts
+import type { AttrsType, EntityStore } from '@amalgama/entity-store';
+import User, { UserSerialization } from '../entities/User';
+
+export type UserStore = EntityStore<User, AttrsType<typeof User>>;
+
+export type UsersStoreSerialization = UserSerialization[];
+
+export interface RootStoreSerialization {
+	usersStore?: UsersStoreSerialization
+}
+
+// stores/RootStore.ts
+import { makeAutoObservable } from 'mobx';
+import { PersistableRootStore } from '@amalgama/mobx-store-persistor';
+import { EntityStore, AttrsType } from '@amalgama/entity-store';
+import User from '../entities/User';
+import {
+	RootStoreSerialization, UsersStoreSerialization, UserStore
+} from './RooStore.types';
+
+export class RootStore implements PersistableRootStore {
+	userStore: UserStore;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	[ key: string ]: any;
+
+	constructor() {
+		this.userStore = new EntityStore<User, AttrsType<typeof User>>( User, this );
+
+		makeAutoObservable( this );
+	}
+
+	serializationToPersist(): RootStoreSerialization {
+		return {
+			usersStore: this.userStore.serialize() as UsersStoreSerialization
+		};
+	}
+
+	rehydrateWithSerialization( serialization: RootStoreSerialization ) {
+		this.userStore.hydrate( serialization.usersStore || [] );
+	}
+
+	getStore( storeName: string ) {
+		return this[ `${storeName}Store` ] || null;
+	}
+
+	clearStore() {
+		this.userStore.clear();
+	}
+}
+```
+
 ## EntityStore
 
 A store for entities of a given type.
