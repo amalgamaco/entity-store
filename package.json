@@ -1,5 +1,5 @@
 {
-	"name": "@amalgama/entity-store",
+	"name": "@amalgamaco/entity-store",
 	"version": "1.1.0",
 	"description": "A set of base classes for defining entities, stores for each entity, and relationships between them, facilitating the tasks of creating, fetching, updating and deleting them.",
 	"main": "dist/index.js",
@@ -15,13 +15,14 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git@git.amalgama.co:amalgama/packages/npm/entity-store.git"
+		"url": "git@github.com:amalgamaco/entity-store.git"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"publishConfig": {
-		"@amalgama:registry": " https://git.amalgama.co/api/v4/projects/982/packages/npm/"
+		"registry": "https://registry.npmjs.org",
+		"access": "public"
 	},
 	"devDependencies": {
 		"@types/jest": "^28.1.6",
@@ -76,14 +77,13 @@
 			"requireCleanWorkingDir": false,
 			"requireUpstream": true,
 			"commitMessage": "Release v${version}",
-			"changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --issue-url https://git.amalgama.co/amalgama/packages/npm/entity-store/-/issues/{id} --merge-url https://git.amalgama.co/amalgama/packages/npm/entity-store/-/merge_requests/{id} --commit-url https://git.amalgama.co/amalgama/packages/npm/entity-store/-/commit/{id}"
+			"changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --issue-url https://github.com/amalgamaco/entity-store/issues/{id} --merge-url https://github.com/amalgamaco/entity-store/pull/{id} --commit-url https://github.com/amalgamaco/entity-store/commit/{id}"
 		},
 		"hooks": {
 			"after:bump": "npx auto-changelog -p"
 		},
-		"gitlab": {
+		"github": {
 			"release": true,
-			"publish": true,
 			"releaseName": "Release v${version}"
 		},
 		"npm": {
