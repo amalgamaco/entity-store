@@ -23,7 +23,7 @@ export interface UserSerialization {
 }
 
 // entities/User.ts
-import { StoreEntity, IRootStore } from '@amalgama/entity-store';
+import { StoreEntity, IRootStore } from '@amalgamaco/entity-store';
 import { makeObservable, observable } from 'mobx';
 import { UserAttributes, UserSerialization } from './User.types';
 
@@ -77,7 +77,7 @@ export default class User extends StoreEntity {
 }
 
 // stores/RootStore.types.ts
-import type { AttrsType, EntityStore } from '@amalgama/entity-store';
+import type { AttrsType, EntityStore } from '@amalgamaco/entity-store';
 import User, { UserSerialization } from '../entities/User';
 
 export type UserStore = EntityStore<User, AttrsType<typeof User>>;
@@ -90,8 +90,8 @@ export interface RootStoreSerialization {
 
 // stores/RootStore.ts
 import { makeAutoObservable } from 'mobx';
-import { PersistableRootStore } from '@amalgama/mobx-store-persistor';
-import { EntityStore, AttrsType } from '@amalgama/entity-store';
+import { PersistableRootStore } from '@amalgama/mobx-store-persistor'; // Private repository
+import { EntityStore, AttrsType } from '@amalgamaco/entity-store';
 import User from '../entities/User';
 import {
 	RootStoreSerialization, UsersStoreSerialization, UserStore
@@ -133,7 +133,7 @@ export class RootStore implements PersistableRootStore {
 A store for entities of a given type.
 
 ```ts
-import { EntityStore, AttrsType } from '@amalgama/entity-store';
+import { EntityStore, AttrsType } from '@amalgamaco/entity-store';
 import Item from '../entities/Item';
 import { rootStore } from './shared';
 
@@ -342,7 +342,7 @@ __parameters__
 
 __usage__
 ```ts
-import { StoreEntity, hasMany } from '@amalgama/entity-store';
+import { StoreEntity, hasMany } from '@amalgamaco/entity-store';
 import Comment from './Comment';
 
 class Post extends StoreEntiy {
@@ -375,7 +375,7 @@ __parameters__
 
 __usage__
 ```ts
-import { StoreEntity, belongsTo } from '@amalgama/entity-store';
+import { StoreEntity, belongsTo } from '@amalgamaco/entity-store';
 import User from './User';
 
 class Post extends StoreEntiy {
@@ -420,7 +420,7 @@ export interface IRelationshipConfig {
 
 __usage__
 ```ts
-import { StoreEntity } from '@amalgama/entity-store';
+import { StoreEntity } from '@amalgamaco/entity-store';
 import User from './User';
 import Comment from './Comment';
 
