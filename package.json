@@ -1,6 +1,6 @@
 {
 	"name": "@amalgamaco/entity-store",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"description": "A set of base classes for defining entities, stores for each entity, and relationships between them, facilitating the tasks of creating, fetching, updating and deleting them.",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
